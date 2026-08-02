@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'" />
+    <title>Codex Session Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="window-drag"></div>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <strong>Session Manager</strong>
+          <small>CODEX ARCHIVE</small>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="folderButton" class="ghost-button" title="다른 sessions 폴더 선택">
+          <span aria-hidden="true">⌘</span> 세션 폴더
+        </button>
+        <button id="refreshButton" class="icon-button" title="새로고침 (R)" aria-label="세션 새로고침">↻</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-heading">
+          <div>
+            <span class="section-label">LOCAL SESSIONS</span>
+            <strong id="sessionCount">불러오는 중</strong>
+          </div>
+          <span id="platformBadge" class="platform-badge">—</span>
+        </div>
+
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="대화, 경로 또는 ID 검색" autocomplete="off" />
+          <kbd>/</kbd>
+        </label>
+
+        <div class="sort-row" role="group" aria-label="정렬 방식">
+          <button class="sort-button active" data-sort="updated">최근 활동</button>
+          <button class="sort-button" data-sort="created">생성일</button>
+          <span class="key-hint"><kbd>↑</kbd><kbd>↓</kbd> 이동</span>
+        </div>
+
+        <div id="sessionList" class="session-list" role="listbox" aria-label="Codex 세션 목록"></div>
+      </aside>
+
+      <section class="detail-panel">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-symbol"><span></span><span></span><span></span></div>
+          <h1>세션을 선택하세요</h1>
+          <p>왼쪽 목록에서 대화를 선택하면<br />전체 대화 미리보기가 여기에 표시됩니다.</p>
+          <div class="shortcut-line"><kbd>↑</kbd><kbd>↓</kbd> 선택 <i></i> <kbd>Enter</kbd> 이어하기</div>
+        </div>
+
+        <div id="detailView" class="detail-view hidden">
+          <header class="detail-header">
+            <div class="detail-heading">
+              <span class="section-label">SESSION PREVIEW</span>
+              <h1 id="detailTitle"></h1>
+              <div class="detail-meta">
+                <span id="detailDate"></span>
+                <span class="meta-dot"></span>
+                <span id="detailMessages"></span>
+              </div>
+            </div>
+            <button id="resumeButton" class="resume-button">
+              <span class="terminal-icon">›_</span>
+              터미널에서 이어하기
+              <kbd>↵</kbd>
+            </button>
+          </header>
+
+          <div class="session-facts">
+            <div class="fact-path">
+              <span class="fact-icon">⌂</span>
+              <div><small>WORKING DIRECTORY</small><strong id="detailCwd"></strong></div>
+            </div>
+            <button id="copyIdButton" class="id-button" title="세션 ID 복사">
+              <small>SESSION ID</small><code id="detailId"></code><span>⧉</span>
+            </button>
+          </div>
+
+          <div id="truncatedNotice" class="notice hidden">이 세션은 길어서 최근 500개 메시지만 표시합니다.</div>
+          <div id="conversation" class="conversation" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="statusbar">
+      <div><span id="connectionDot" class="status-dot"></span><span id="codexStatus">Codex CLI 확인 중</span></div>
+      <div id="sessionsPath" class="sessions-path"></div>
+    </footer>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="renderer.js"></script>
+  </body>
+</html>
