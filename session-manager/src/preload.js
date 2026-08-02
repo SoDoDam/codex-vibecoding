@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('sessionManager', {
   getSessionDetail: (sessionId) => ipcRenderer.invoke('sessions:detail', sessionId),
   resumeSession: (sessionId) => ipcRenderer.invoke('sessions:resume', sessionId),
   chooseSessionsFolder: () => ipcRenderer.invoke('sessions:choose-folder'),
+  resetSessionsFolder: () => ipcRenderer.invoke('sessions:reset-folder'),
   copyText: (text) => ipcRenderer.invoke('clipboard:write', text)
 });

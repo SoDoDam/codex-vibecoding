@@ -38,7 +38,7 @@ function appleScriptQuote(value) {
 }
 
 function validatedSessionId(sessionId) {
-  if (!/^[0-9a-f-]{16,64}$/i.test(sessionId)) throw new Error('올바르지 않은 세션 ID입니다.');
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) throw new Error('올바르지 않은 세션 ID입니다.');
   return sessionId;
 }
 

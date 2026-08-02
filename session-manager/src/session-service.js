@@ -4,7 +4,11 @@ const readline = require('node:readline');
 
 const MAX_MESSAGE_LENGTH = 20_000;
 const MAX_DETAIL_MESSAGES = 500;
+const MAX_SEARCH_TEXT_LENGTH = 12_000;
+const MAX_DETAIL_CACHE_SIZE = 20;
+const UUID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 const summaryCache = new Map();
+const detailCache = new Map();
 
 function cleanText(value) {
   if (typeof value !== 'string') return '';
@@ -19,6 +23,25 @@ function cleanText(value) {
 function shorten(text, max = 180) {
   const compact = cleanText(text).replace(/\s+/g, ' ');
   return compact.length > max ? `${compact.slice(0, max - 1)}…` : compact;
+}
+
+function sessionIdFrom(meta, filePath) {
+  const metadataId = meta?.id || meta?.session_id;
+  if (typeof metadataId === 'string' && UUID_PATTERN.test(metadataId)) return metadataId.match(UUID_PATTERN)[0];
+  return path.basename(filePath).match(UUID_PATTERN)?.[0] || null;
+}
+
+function normalizeSessionsRoot(selectedPath) {
+  const nestedSessions = path.join(selectedPath, 'sessions');
+  try {
+    if (fs.statSync(nestedSessions).isDirectory()) return nestedSessions;
+  } catch { /* The selected directory can already be the sessions directory. */ }
+  return selectedPath;
+}
+
+function newestTimestamp(...values) {
+  const valid = values.map((value) => new Date(value)).filter((value) => !Number.isNaN(value.getTime()));
+  return valid.length ? new Date(Math.max(...valid.map((value) => value.getTime()))).toISOString() : new Date(0).toISOString();
 }
 
 function messageFromRecord(record) {
@@ -76,6 +99,7 @@ async function summarizeSession(filePath) {
   let lastMessage = '';
   let messageCount = 0;
   let lastTimestamp = null;
+  let searchText = '';
 
   await readLines(filePath, (record) => {
     if (record.type === 'session_meta') meta = record.payload || {};
@@ -85,11 +109,13 @@ async function summarizeSession(filePath) {
     if (message.role === 'user' && !firstUser) firstUser = message.text;
     lastMessage = message.text;
     lastTimestamp = message.timestamp || lastTimestamp;
+    searchText = `${searchText}\n${message.text}`.slice(-MAX_SEARCH_TEXT_LENGTH);
   });
 
-  const id = meta.id || meta.session_id || path.basename(filePath, '.jsonl').split('-').slice(-5).join('-');
+  const id = sessionIdFrom(meta, filePath);
+  if (!id) throw new Error('세션 UUID를 찾을 수 없습니다.');
   const createdAt = meta.timestamp || stat.birthtime.toISOString();
-  const updatedAt = lastTimestamp || stat.mtime.toISOString();
+  const updatedAt = newestTimestamp(lastTimestamp, stat.mtime.toISOString());
   return {
     id,
     title: shorten(firstUser, 90) || '제목 없는 세션',
@@ -100,6 +126,7 @@ async function summarizeSession(filePath) {
     createdAt,
     updatedAt,
     messageCount,
+    searchText: searchText.toLocaleLowerCase(),
     filePath
   };
 }
@@ -124,6 +151,9 @@ async function listSessions(sessionsRoot) {
   for (const cachedPath of summaryCache.keys()) {
     if (!activeFiles.has(cachedPath)) summaryCache.delete(cachedPath);
   }
+  for (const cachedPath of detailCache.keys()) {
+    if (!activeFiles.has(cachedPath)) detailCache.delete(cachedPath);
+  }
   const sessions = await mapWithConcurrency(files, 6, async (filePath) => {
     const stat = await fs.promises.stat(filePath);
     const cached = summaryCache.get(filePath);
@@ -136,6 +166,13 @@ async function listSessions(sessionsRoot) {
 }
 
 async function readSessionDetail(filePath) {
+  const stat = await fs.promises.stat(filePath);
+  const cached = detailCache.get(filePath);
+  if (cached && cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+    detailCache.delete(filePath);
+    detailCache.set(filePath, cached);
+    return cached.detail;
+  }
   const messages = [];
   let meta = {};
   let totalMessages = 0;
@@ -147,12 +184,15 @@ async function readSessionDetail(filePath) {
     messages.push({ ...message, text: message.text.slice(0, MAX_MESSAGE_LENGTH) });
     if (messages.length > MAX_DETAIL_MESSAGES) messages.shift();
   });
-  return {
+  const detail = {
     meta: { id: meta.id || meta.session_id || '', cwd: meta.cwd || '', timestamp: meta.timestamp || '' },
     messages,
     totalMessages,
     truncated: totalMessages > messages.length
   };
+  detailCache.set(filePath, { mtimeMs: stat.mtimeMs, size: stat.size, detail });
+  while (detailCache.size > MAX_DETAIL_CACHE_SIZE) detailCache.delete(detailCache.keys().next().value);
+  return detail;
 }
 
 module.exports = {
@@ -160,7 +200,9 @@ module.exports = {
   listJsonlFiles,
   listSessions,
   messageFromRecord,
+  normalizeSessionsRoot,
   readSessionDetail,
+  sessionIdFrom,
   shorten,
   summarizeSession
 };

@@ -4,6 +4,7 @@ const ui = {
   searchInput: document.querySelector('#searchInput'),
   refreshButton: document.querySelector('#refreshButton'),
   folderButton: document.querySelector('#folderButton'),
+  resetFolderButton: document.querySelector('#resetFolderButton'),
   platformBadge: document.querySelector('#platformBadge'),
   emptyState: document.querySelector('#emptyState'),
   detailView: document.querySelector('#detailView'),
@@ -44,7 +45,7 @@ function shortId(value) { return value ? `${value.slice(0, 8)}…${value.slice(-
 function filteredSessions() {
   const query = state.query.trim().toLocaleLowerCase();
   return state.sessions
-    .filter((session) => !query || [session.title, session.preview, session.cwd, session.id].some((value) => String(value).toLocaleLowerCase().includes(query)))
+    .filter((session) => !query || [session.title, session.preview, session.searchText, session.cwd, session.id].some((value) => String(value || '').toLocaleLowerCase().includes(query)))
     .sort((a, b) => new Date(state.sort === 'created' ? b.createdAt : b.updatedAt) - new Date(state.sort === 'created' ? a.createdAt : a.updatedAt));
 }
 
@@ -179,6 +180,7 @@ async function updateAppInfo() {
   ui.platformBadge.textContent = names[info.platform] || info.platform.toUpperCase();
   ui.sessionsPath.textContent = info.sessionsRoot;
   ui.sessionsPath.title = info.sessionsRoot;
+  ui.resetFolderButton.classList.toggle('hidden', !info.customSessionsRoot);
   ui.connectionDot.className = `status-dot ${info.codexPath ? 'ok' : 'error'}`;
   ui.codexStatus.textContent = info.codexPath ? 'Codex CLI 연결됨' : 'Codex CLI를 찾을 수 없음';
 }
@@ -215,6 +217,7 @@ ui.refreshButton.addEventListener('click', () => loadSessions());
 ui.resumeButton.addEventListener('click', resumeSelected);
 ui.copyIdButton.addEventListener('click', async () => { if (state.selectedId) { await window.sessionManager.copyText(state.selectedId); showToast('세션 ID를 복사했습니다.'); } });
 ui.folderButton.addEventListener('click', async () => { const selected = await window.sessionManager.chooseSessionsFolder(); if (selected) { await updateAppInfo(); await loadSessions({ keepSelection: false }); } });
+ui.resetFolderButton.addEventListener('click', async () => { await window.sessionManager.resetSessionsFolder(); await updateAppInfo(); await loadSessions({ keepSelection: false }); showToast('기본 세션 경로로 돌아왔습니다.'); });
 document.querySelectorAll('.sort-button').forEach((button) => button.addEventListener('click', () => {
   state.sort = button.dataset.sort;
   document.querySelectorAll('.sort-button').forEach((item) => item.classList.toggle('active', item === button));

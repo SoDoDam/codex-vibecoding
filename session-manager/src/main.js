@@ -1,8 +1,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('node:fs');
-const { app, BrowserWindow, clipboard, dialog, ipcMain } = require('electron');
-const { listSessions, readSessionDetail } = require('./session-service');
+const { pathToFileURL } = require('node:url');
+const { app, BrowserWindow, clipboard, dialog, ipcMain, session } = require('electron');
+const { listSessions, normalizeSessionsRoot, readSessionDetail } = require('./session-service');
 const { findCodexExecutable, resumeSession } = require('./terminal-service');
 
 let mainWindow;
@@ -16,7 +17,7 @@ function settingsPath() {
 function loadSettings() {
   try {
     const settings = JSON.parse(fs.readFileSync(settingsPath(), 'utf8'));
-    if (settings.sessionsRoot && fs.existsSync(settings.sessionsRoot)) sessionsRootOverride = settings.sessionsRoot;
+    if (settings.sessionsRoot && fs.existsSync(settings.sessionsRoot)) sessionsRootOverride = normalizeSessionsRoot(settings.sessionsRoot);
   } catch { /* First run or invalid settings: use the standard Codex location. */ }
 }
 
@@ -49,7 +50,11 @@ function createWindow() {
       sandbox: true
     }
   });
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  const indexPath = path.join(__dirname, 'index.html');
+  const allowedUrl = pathToFileURL(indexPath).href;
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  mainWindow.webContents.on('will-navigate', (event, url) => { if (url !== allowedUrl) event.preventDefault(); });
+  mainWindow.loadFile(indexPath);
 }
 
 ipcMain.handle('sessions:list', async () => {
@@ -73,17 +78,24 @@ ipcMain.handle('sessions:resume', async (_event, sessionId) => {
 ipcMain.handle('sessions:choose-folder', async () => {
   const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'], title: 'Codex sessions 폴더 선택' });
   if (result.canceled || !result.filePaths[0]) return null;
-  sessionsRootOverride = result.filePaths[0];
+  sessionsRootOverride = normalizeSessionsRoot(result.filePaths[0]);
   saveSettings();
   return sessionsRootOverride;
 });
 
-ipcMain.handle('app:info', () => ({ sessionsRoot: sessionsRoot(), codexPath: findCodexExecutable(), platform: process.platform }));
-ipcMain.handle('clipboard:write', (_event, text) => { clipboard.writeText(String(text)); return true; });
+ipcMain.handle('sessions:reset-folder', () => {
+  sessionsRootOverride = null;
+  saveSettings();
+  return sessionsRoot();
+});
+
+ipcMain.handle('app:info', () => ({ sessionsRoot: sessionsRoot(), customSessionsRoot: Boolean(sessionsRootOverride), codexPath: findCodexExecutable(), platform: process.platform }));
+ipcMain.handle('clipboard:write', (_event, text) => { clipboard.writeText(String(text).slice(0, 256)); return true; });
 
 app.whenReady().then(() => {
   app.setAppUserModelId('com.codexvibecoding.sessionmanager');
   loadSettings();
+  session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
