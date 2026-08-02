@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEON APEX — 3D Racing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="game"></div>
+
+    <div class="scanlines"></div>
+    <main id="hud">
+      <section class="brand"><span>NEON</span> APEX <i>///</i></section>
+      <section class="telemetry">
+        <div class="speed"><span id="speed">000</span><small>KM/H</small></div>
+        <div class="gear"><b id="gear">N</b><small>GEAR</small></div>
+      </section>
+      <section class="race-data">
+        <div class="position"><small>POSITION</small><strong id="position">1<span>ST</span></strong><em id="racers">/ 4</em></div>
+        <div class="lap"><small>LAP</small><strong id="lap">1 <span>/ 3</span></strong></div>
+        <div class="time"><small>TIME</small><strong id="time">00:00.000</strong></div>
+      </section>
+      <section class="boost-wrap">
+        <div class="boost-label">NITRO <span id="boostNum">100%</span></div>
+        <div class="boost-bar"><div id="boostFill"></div></div>
+      </section>
+      <section class="leaderboard" id="leaderboard"></section>
+      <section class="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> DRIVE <span>·</span> <kbd>SHIFT</kbd> BOOST</section>
+    </main>
+
+    <div class="start-screen" id="startScreen">
+      <div class="eyebrow">MIDNIGHT SERIES · ROUND 01</div>
+      <h1>NEON<br /><span>APEX</span></h1>
+      <p>야간 도시 서킷에서 3랩을 먼저 완주하세요.</p>
+      <button id="startButton">RACE NOW <b>→</b></button>
+      <small>WASD 또는 방향키로 조작 · SHIFT로 니트로</small>
+    </div>
+    <div id="countdown" class="countdown"></div>
+    <div id="finish" class="finish hidden"></div>
+
+    <script type="module" src="game.js"></script>
+  </body>
+</html>
