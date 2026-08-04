@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/travel-plan.schema.json",
+  "title": "여행 계획표",
+  "description": "여행지, 일자별 일정, 숙소, 경비 및 준비물을 기록하기 위한 스키마입니다.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "여행지 이름",
+    "일자별 일정",
+    "추천 숙소",
+    "예상 총경비",
+    "준비물 목록"
+  ],
+  "properties": {
+    "여행지 이름": {
+      "type": "string",
+      "minLength": 1,
+      "description": "여행할 도시, 지역 또는 국가의 이름"
+    },
+    "일자별 일정": {
+      "type": "array",
+      "minItems": 1,
+      "description": "날짜별 여행 일정",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "날짜",
+          "장소",
+          "활동내용"
+        ],
+        "properties": {
+          "날짜": {
+            "type": "string",
+            "format": "date",
+            "description": "일정 날짜(YYYY-MM-DD 형식)"
+          },
+          "장소": {
+            "type": "string",
+            "minLength": 1,
+            "description": "방문 장소"
+          },
+          "활동내용": {
+            "type": "string",
+            "minLength": 1,
+            "description": "해당 장소에서 할 활동"
+          }
+        }
+      }
+    },
+    "추천 숙소": {
+      "type": "array",
+      "minItems": 1,
+      "description": "중복 없는 추천 숙소 이름 목록",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "예상 총경비": {
+      "type": "number",
+      "minimum": 0,
+      "description": "여행에 필요한 예상 총경비"
+    },
+    "준비물 목록": {
+      "type": "array",
+      "description": "중복 없이 정리한 여행 준비물 목록",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
