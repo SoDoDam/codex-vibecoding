@@ -1,0 +1,219 @@
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #17211f;
+  background: #eef3ef;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px 18px;
+  background:
+    linear-gradient(135deg, rgba(40, 102, 110, 0.14), transparent 32%),
+    linear-gradient(315deg, rgba(123, 63, 97, 0.14), transparent 34%), #eef3ef;
+}
+
+.quest-board {
+  width: min(100%, 560px);
+}
+
+.quest-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #4f6763;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  margin: 0;
+  color: #12201d;
+  font-size: clamp(2rem, 12vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.progress-pill {
+  flex: 0 0 auto;
+  margin: 0 0 5px;
+  padding: 8px 10px;
+  border: 1px solid #bdd0ca;
+  border-radius: 8px;
+  color: #28413d;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.card-stage {
+  position: relative;
+  display: grid;
+  min-height: 330px;
+}
+
+.quest-card {
+  grid-area: 1 / 1;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid rgba(23, 33, 31, 0.12);
+  border-top: 8px solid var(--accent-color);
+  border-radius: 8px;
+  background: #fffaf0;
+  box-shadow: 0 22px 45px rgba(30, 43, 39, 0.16);
+}
+
+.card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.quest-label,
+.quest-time,
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.quest-label {
+  padding: 7px 10px;
+  color: #ffffff;
+  background: var(--accent-color);
+}
+
+.quest-time {
+  padding: 7px 0;
+  color: #5a6a66;
+}
+
+.quest-card h2 {
+  margin: 0;
+  max-width: 12ch;
+  color: #17211f;
+  font-size: clamp(2rem, 8vw, 3.35rem);
+  line-height: 1.03;
+  letter-spacing: 0;
+}
+
+.quest-card p {
+  margin: 18px 0 0;
+  max-width: 42rem;
+  color: #455954;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.status {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 7px 10px;
+  color: #475d58;
+  background: #e8eee8;
+}
+
+.status.done {
+  color: #113b30;
+  background: #bfe3cf;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.button.primary {
+  color: #ffffff;
+  background: #17211f;
+}
+
+.button.secondary {
+  color: #17211f;
+  background: #c9d9d0;
+}
+
+.button:focus-visible {
+  outline: 3px solid #7b3f61;
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .app-shell {
+    align-items: start;
+    padding-top: 22px;
+  }
+
+  .quest-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .progress-pill {
+    margin: 0;
+  }
+
+  .quest-card {
+    padding: 22px;
+  }
+
+  .quest-card h2 {
+    max-width: 100%;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
