@@ -60,13 +60,90 @@ macOS와 Windows에서 동일한 화면과 기능을 제공하며 Linux 터미�
 | [Windows 사용자 가이드](docs/Codex-Session-Manager-1.1.0-Windows-사용자가이드.pptx) | Windows 10/11 사전 설치, PowerShell 실행, 경로 설정과 배포 체크리스트 |
 | [웹 발표 페이지](docs/presentation/index.html) | 브라우저에서 키보드와 스크롤로 보는 15페이지 발표자료 |
 
-웹 발표 페이지는 외부 CDN 없이 동작합니다. Windows에서는 `docs\presentation\index.html`을 더블 클릭하고, MacBook에서는 다음 명령으로 열 수 있습니다.
+### PPT 실행 가이드
 
-```bash
-open docs/presentation/index.html
+PPTX 파일에는 발표에 필요한 화면 이미지가 모두 포함되어 있으므로 별도의 이미지 폴더나 인터넷 연결이 필요하지 않습니다. 저장소를 내려받은 뒤 `session-manager` 디렉터리에서 다음 방법으로 실행합니다.
+
+#### Windows 10/11
+
+1. Microsoft PowerPoint가 설치되어 있는지 확인합니다.
+2. 파일 탐색기에서 `docs` 폴더를 열고 사용할 PPTX 파일을 더블 클릭합니다.
+3. PowerPoint의 **슬라이드 쇼 > 처음부터**를 선택하거나 `F5`를 눌러 발표를 시작합니다.
+4. 현재 슬라이드부터 시작하려면 `Shift + F5`, 발표를 끝내려면 `Esc`를 누릅니다.
+
+PowerShell에서 바로 열 수도 있습니다.
+
+```powershell
+Start-Process ".\docs\Codex-Session-Manager-1.1.0-발표자료.pptx"
+Start-Process ".\docs\Codex-Session-Manager-1.1.0-Windows-사용자가이드.pptx"
 ```
 
-발표 페이지는 `←`, `→`, `Page Up`, `Page Down`, `Home`, `End` 키를 지원하며 인쇄 대화상자에서 PDF로 저장할 수도 있습니다. 화면 이미지는 개인정보가 없는 12개의 발표용 데모 세션으로 실제 1.1.0 앱을 실행해 캡처했습니다.
+GitHub 웹사이트에서 보고 있다면 PPTX 링크를 클릭한 뒤 원본 파일을 다운로드해야 합니다. Windows의 **보호된 보기**가 표시되면 파일 출처를 확인한 후 **편집 사용** 또는 **슬라이드 쇼 시작**을 선택합니다.
+
+#### macOS
+
+PowerPoint가 설치되어 있으면 다음 명령으로 전체 발표자료를 엽니다.
+
+```bash
+open -a "Microsoft PowerPoint" "docs/Codex-Session-Manager-1.1.0-발표자료.pptx"
+```
+
+Keynote로 보려면 다음 명령을 사용합니다. 처음 열 때 변환 안내가 표시될 수 있지만 원본 PPTX 파일은 변경되지 않습니다.
+
+```bash
+open -a Keynote "docs/Codex-Session-Manager-1.1.0-발표자료.pptx"
+```
+
+앱을 지정하지 않고 macOS의 기본 프레젠테이션 앱으로 열 수도 있습니다.
+
+```bash
+open "docs/Codex-Session-Manager-1.1.0-발표자료.pptx"
+```
+
+### 웹 발표 페이지 로컬 실행
+
+웹 발표 페이지는 외부 CDN 없이 동작합니다. 단순 열람은 `docs/presentation/index.html`을 더블 클릭해도 되지만, 브라우저 보안 정책에 따른 차이를 피하고 발표 환경을 일정하게 유지하려면 로컬 서버 실행을 권장합니다.
+
+#### Windows PowerShell
+
+Python이 설치되어 있다면 `session-manager` 디렉터리에서 다음 명령을 실행합니다.
+
+```powershell
+cd .\docs\presentation
+py -m http.server 8765 --bind 127.0.0.1
+```
+
+새 PowerShell 창에서 발표 페이지를 엽니다.
+
+```powershell
+Start-Process "http://127.0.0.1:8765/"
+```
+
+#### macOS 터미널
+
+```bash
+cd docs/presentation
+python3 -m http.server 8765 --bind 127.0.0.1
+```
+
+새 터미널 창에서 발표 페이지를 엽니다.
+
+```bash
+open "http://127.0.0.1:8765/"
+```
+
+브라우저 주소창에 `http://127.0.0.1:8765/`를 직접 입력해도 됩니다. 발표가 끝나면 서버가 실행 중인 터미널에서 `Ctrl + C`를 눌러 종료합니다.
+
+#### 발표 조작과 파일 이동
+
+| 키 | 동작 |
+| --- | --- |
+| `→` / `↓` / `Page Down` / `Space` | 다음 슬라이드 |
+| `←` / `↑` / `Page Up` | 이전 슬라이드 |
+| `Home` | 첫 슬라이드 |
+| `End` | 마지막 슬라이드 |
+
+브라우저의 인쇄 기능에서 PDF로 저장할 수도 있습니다. 웹 발표자료를 다른 Windows PC나 MacBook으로 옮길 때는 `index.html`만 복사하지 말고 `docs/presentation` 폴더 전체를 복사해야 스타일, 스크립트와 이미지가 함께 표시됩니다. 화면 이미지는 개인정보가 없는 12개의 발표용 데모 세션으로 실제 1.1.0 앱을 실행해 캡처했습니다.
 
 ## 동작 구조
 
