@@ -8,6 +8,7 @@ macOS와 Windows에서 동일한 화면과 기능을 제공하며 Linux 터미�
 
 - [주요 기능](#주요-기능)
 - [1.1.0 보완 사항](#110-보완-사항)
+- [발표자료와 실제 화면](#발표자료와-실제-화면)
 - [동작 구조](#동작-구조)
 - [요구 사항](#요구-사항)
 - [실행 방법](#실행-방법)
@@ -49,6 +50,24 @@ macOS와 Windows에서 동일한 화면과 기능을 제공하며 Linux 터미�
 - 외부 창 열기, 외부 URL 이동과 웹 권한 요청을 Electron 메인 프로세스에서 차단합니다.
 - 손상된 JSONL, 존재하지 않는 폴더, 긴 대화, 캐시 갱신과 경로 자동 인식 테스트를 추가했습니다.
 
+## 발표자료와 실제 화면
+
+다음 자료는 Windows 사용자를 우선 대상으로 구성했으며, macOS의 PowerPoint·Keynote와 Safari·Chrome에서도 볼 수 있습니다.
+
+| 자료 | 용도 |
+| --- | --- |
+| [전체 발표자료](docs/Codex-Session-Manager-1.1.0-발표자료.pptx) | 제품 흐름, 실제 화면, 핵심 코드, 설정과 Windows/macOS 배포 설명 |
+| [Windows 사용자 가이드](docs/Codex-Session-Manager-1.1.0-Windows-사용자가이드.pptx) | Windows 10/11 사전 설치, PowerShell 실행, 경로 설정과 배포 체크리스트 |
+| [웹 발표 페이지](docs/presentation/index.html) | 브라우저에서 키보드와 스크롤로 보는 15페이지 발표자료 |
+
+웹 발표 페이지는 외부 CDN 없이 동작합니다. Windows에서는 `docs\presentation\index.html`을 더블 클릭하고, MacBook에서는 다음 명령으로 열 수 있습니다.
+
+```bash
+open docs/presentation/index.html
+```
+
+발표 페이지는 `←`, `→`, `Page Up`, `Page Down`, `Home`, `End` 키를 지원하며 인쇄 대화상자에서 PDF로 저장할 수도 있습니다. 화면 이미지는 개인정보가 없는 12개의 발표용 데모 세션으로 실제 1.1.0 앱을 실행해 캡처했습니다.
+
 ## 동작 구조
 
 ```mermaid
@@ -84,6 +103,15 @@ Codex 세션은 기본적으로 날짜별 하위 디렉토리의 JSONL 파일로
 - Node.js 22.12 이상
 - npm
 - Codex CLI 설치 및 로그인
+
+Windows PowerShell에서 npm으로 Codex CLI를 설치하는 예시는 다음과 같습니다.
+
+```powershell
+npm install -g @openai/codex
+codex
+```
+
+첫 `codex` 실행에서 제공되는 로그인 방식을 선택합니다. 최신 설치 방법은 [OpenAI Codex CLI 공식 문서](https://learn.chatgpt.com/docs/codex/cli)를 확인하세요.
 
 터미널에서 다음 명령이 정상적으로 실행되어야 합니다.
 
@@ -211,6 +239,10 @@ npm test
 - 실제 `~/.codex/sessions` 세션 목록과 대화 렌더링 확인
 - 240개 세션 목록의 점진 렌더링과 키보드 탐색 확인
 - Apple Silicon macOS DMG 및 ZIP 패키징 확인
+- Windows x64 앱 본체 패키징 확인: `release/win-unpacked/Codex Session Manager.exe`
+- 생성된 Windows 앱 본체가 PE32+ x86-64 GUI 실행 파일임을 확인
+
+Windows 관련 검증은 소스의 `win32` 분기, 자동 테스트와 x64 앱 본체 패키징까지 완료했습니다. 실제 Windows 10/11에서 NSIS 설치 프로그램 설치, 앱 실행, 세션 검색과 `Enter` 재개 동작은 Windows 환경에서 최종 확인해야 합니다.
 
 ## 설치 파일 만들기
 
@@ -249,6 +281,10 @@ npm run dist:win
 
 ```text
 session-manager/
+├── docs/
+│   ├── Codex-Session-Manager-1.1.0-발표자료.pptx
+│   ├── Codex-Session-Manager-1.1.0-Windows-사용자가이드.pptx
+│   └── presentation/        # 반응형 웹 발표 페이지와 실제 화면 캡처
 ├── src/
 │   ├── main.js              # Electron 창, 설정과 IPC
 │   ├── preload.js           # 렌더러에 공개하는 제한된 API

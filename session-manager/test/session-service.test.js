@@ -21,6 +21,12 @@ async function writeSession(root, relativePath, data) {
   const filePath = path.join(root, relativePath);
   await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
   await fs.promises.writeFile(filePath, `${data.map((item) => JSON.stringify(item)).join('\n')}\n잘못된-json\n`, 'utf8');
+  // 테스트 실행 날짜가 세션 활동 시각보다 늦어도 정렬 결과가 바뀌지 않도록 수정 시각을 고정한다.
+  const latestTimestamp = data
+    .map((item) => new Date(item.timestamp))
+    .filter((date) => !Number.isNaN(date.getTime()))
+    .sort((a, b) => b - a)[0];
+  if (latestTimestamp) await fs.promises.utimes(filePath, latestTimestamp, latestTimestamp);
   return filePath;
 }
 

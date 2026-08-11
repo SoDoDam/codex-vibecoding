@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Codex Session Manager 1.1.0 실행, 핵심 코드, 배포 및 사전 설정 발표자료" />
+    <title>Codex Session Manager 1.1.0 발표자료</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="presentation">
+    <header class="presentation__toolbar">
+      <a class="presentation__brand" href="#slide-1" aria-label="첫 슬라이드로 이동">
+        <span class="presentation__brand-mark" aria-hidden="true"></span>
+        <span><strong>SESSION MANAGER</strong><small>v1.1.0 · 발표자료</small></span>
+      </a>
+      <div class="presentation__status" aria-live="polite">
+        <span id="currentSlide">01</span><i></i><span id="totalSlides">15</span>
+      </div>
+      <div class="presentation__controls">
+        <button id="previousButton" type="button" aria-label="이전 슬라이드">←</button>
+        <button id="nextButton" type="button" aria-label="다음 슬라이드">→</button>
+      </div>
+    </header>
+
+    <main id="deck" class="deck">
+      <section id="slide-1" class="slide slide--cover" data-slide>
+        <div class="slide__eyebrow">CODEX ARCHIVE · DESKTOP WORKFLOW</div>
+        <div class="cover__grid">
+          <div>
+            <p class="cover__version">1.1.0</p>
+            <h1 class="cover__title">Codex<br />Session Manager</h1>
+            <p class="cover__subtitle">로컬 세션을 찾고, 읽고, 이어 쓰는<br />Windows 중심 · macOS 호환 데스크톱 앱</p>
+          </div>
+          <div class="cover__visual" aria-hidden="true">
+            <span>FIND</span><span>PREVIEW</span><span>RESUME</span>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>2026.08.11</span><span>발표용 실제 화면 · 핵심 코드 · 실행/배포 가이드</span></footer>
+      </section>
+
+      <section id="slide-2" class="slide" data-slide>
+        <div class="slide__eyebrow">01 · PRODUCT</div>
+        <h2 class="slide__title">세션 탐색을 세 단계로 단순화</h2>
+        <div class="feature-grid">
+          <article class="feature-card"><b>01</b><h3>Find</h3><p><code>~/.codex/sessions</code>의 JSONL을 읽고 최근 활동순으로 목록화합니다.</p></article>
+          <article class="feature-card"><b>02</b><h3>Preview</h3><p>첫 요청, 최근 답변, 작업 경로와 전체 대화를 한 화면에서 확인합니다.</p></article>
+          <article class="feature-card"><b>03</b><h3>Resume</h3><p>선택한 UUID를 검증한 뒤 새 터미널에서 <code>codex resume</code>을 실행합니다.</p></article>
+        </div>
+        <div class="statement">목록을 찾는 시간보다, 다시 작업을 시작하는 시간을 줄이는 도구</div>
+        <footer class="slide__footer"><span>핵심 가치</span><span>로컬 처리 · 빠른 검색 · 키보드 중심 탐색</span></footer>
+      </section>
+
+      <section id="slide-3" class="slide" data-slide>
+        <div class="slide__eyebrow">02 · PREREQUISITES</div>
+        <h2 class="slide__title">처음 실행 전에 네 가지를 확인</h2>
+        <div class="check-grid">
+          <article class="check-card"><span>01</span><h3>Node.js 22.12+</h3><code>node --version</code><p>Electron 43의 엔진 요구 사항을 충족합니다.</p></article>
+          <article class="check-card"><span>02</span><h3>Codex CLI</h3><code>codex --version</code><p>터미널에서 명령이 실행되고 로그인되어 있어야 합니다.</p></article>
+          <article class="check-card"><span>03</span><h3>로컬 세션</h3><code>~/.codex/sessions</code><p>Codex CLI에서 최소 한 번 대화를 시작합니다.</p></article>
+          <article class="check-card"><span>04</span><h3>폴더 권한</h3><code>read access</code><p>앱이 sessions 폴더와 JSONL 파일을 읽을 수 있어야 합니다.</p></article>
+        </div>
+        <div class="command-panel">
+          <div><small>Windows PowerShell · npm 설치</small><code>npm install -g @openai/codex</code></div>
+          <div><small>첫 실행 및 로그인</small><code>codex</code></div>
+        </div>
+        <footer class="slide__footer"><span>OpenAI Docs 기준</span><span>CLI 최초 실행 시 ChatGPT 로그인 또는 제공되는 인증 방식 선택</span></footer>
+      </section>
+
+      <section id="slide-4" class="slide" data-slide>
+        <div class="slide__eyebrow">03 · RUN LOCALLY</div>
+        <h2 class="slide__title">Windows PowerShell에서 세 명령으로 실행</h2>
+        <div class="run-layout">
+          <div class="terminal-card">
+            <div class="terminal-card__bar"><i></i><i></i><i></i><span>Terminal</span></div>
+            <pre><code><span class="code-comment"># Windows PowerShell · 프로젝트 루트</span>
+cd session-manager
+
+<span class="code-comment"># Electron 및 빌드 도구 설치</span>
+npm install
+
+<span class="code-comment"># Codex Session Manager 1.1.0 실행</span>
+npm start</code></pre>
+          </div>
+          <div class="run-checklist">
+            <h3>실행 후 확인</h3>
+            <ol>
+              <li><b>상태 표시줄</b><span>“Codex CLI 연결됨” 확인</span></li>
+              <li><b>세션 경로</b><span>기본값은 <code>~/.codex/sessions</code></span></li>
+              <li><b>목록 선택</b><span>↑ ↓, Home/End, Page Up/Down</span></li>
+              <li><b>이어하기</b><span>Enter 또는 녹색 버튼</span></li>
+            </ol>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>주 대상: Windows 10/11 x64</span><span>macOS Terminal에서도 동일한 npm 명령 사용</span></footer>
+      </section>
+
+      <section id="slide-5" class="slide slide--media" data-slide>
+        <div class="slide__eyebrow">04 · LIVE SCREEN</div>
+        <h2 class="slide__title">앱 실행 직후: 목록과 대화를 동시에 확인</h2>
+        <figure class="screen-frame">
+          <img src="assets/app-overview.png" alt="Codex Session Manager 전체 목록과 선택된 세션 상세 미리보기 화면" />
+          <figcaption><span>12개 데모 세션</span><span>실제 1.1.0 실행 화면 · 발표용 비식별 데이터</span></figcaption>
+        </figure>
+        <footer class="slide__footer"><span>좌측: 최근 세션</span><span>우측: 작업 경로 · UUID · 대화 전문 · 이어하기</span></footer>
+      </section>
+
+      <section id="slide-6" class="slide slide--media" data-slide>
+        <div class="slide__eyebrow">05 · SEARCH</div>
+        <h2 class="slide__title">제목·대화·경로·ID를 한 번에 검색</h2>
+        <div class="media-split">
+          <figure class="screen-frame screen-frame--compact">
+            <img src="assets/app-search.png" alt="배포라는 검색어로 세션을 필터링한 화면" />
+          </figure>
+          <div class="annotation-list">
+            <article><b>/</b><div><h3>검색창 포커스</h3><p>마우스 없이 바로 검색을 시작합니다.</p></div></article>
+            <article><b>↑↓</b><div><h3>선택 이동</h3><p>현재 필터 결과 안에서 세션을 이동합니다.</p></div></article>
+            <article><b>80</b><div><h3>점진 로딩</h3><p>80개 단위 렌더링과 독립 스크롤로 대규모 목록을 처리합니다.</p></div></article>
+            <article><b>R</b><div><h3>새로고침</h3><p>변경된 JSONL과 캐시를 다시 확인합니다.</p></div></article>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>검색 예: “배포”</span><span>제목뿐 아니라 최근 대화 본문도 검색 인덱스에 포함</span></footer>
+      </section>
+
+      <section id="slide-7" class="slide slide--media" data-slide>
+        <div class="slide__eyebrow">06 · RESUME</div>
+        <h2 class="slide__title">미리 본 세션을 새 터미널에서 그대로 재개</h2>
+        <div class="media-split media-split--reverse">
+          <div class="annotation-list annotation-list--command">
+            <div class="resume-command"><small>앱이 실행하는 핵심 명령</small><code>codex resume &lt;SESSION_ID&gt;</code></div>
+            <article><b>1</b><div><h3>UUID 검증</h3><p>전체 UUID 형식만 허용해 명령 주입을 차단합니다.</p></div></article>
+            <article><b>2</b><div><h3>작업 경로 복원</h3><p>세션에 저장된 cwd가 존재하면 그 위치에서 시작합니다.</p></div></article>
+            <article><b>3</b><div><h3>운영체제별 터미널</h3><p>macOS Terminal, Windows 새 명령창, Linux 터미널 후보를 사용합니다.</p></div></article>
+          </div>
+          <figure class="screen-frame screen-frame--compact">
+            <img src="assets/app-detail.png" alt="Codex CLI 경로 관련 세션을 선택한 상세 미리보기 화면" />
+          </figure>
+        </div>
+        <footer class="slide__footer"><span>공식 CLI 명령</span><span>현재 경로와 저장 경로가 다르면 Codex가 사용할 경로를 확인할 수 있음</span></footer>
+      </section>
+
+      <section id="slide-8" class="slide" data-slide>
+        <div class="slide__eyebrow">07 · ARCHITECTURE</div>
+        <h2 class="slide__title">권한을 분리한 Electron 구조</h2>
+        <div class="architecture">
+          <article><span>Renderer</span><h3>화면과 상태</h3><p>검색, 목록, 미리보기, 키보드 입력</p></article>
+          <i>→</i>
+          <article><span>Preload</span><h3>제한된 IPC</h3><p>허용된 메서드만 renderer에 공개</p></article>
+          <i>→</i>
+          <article><span>Main</span><h3>권한 작업</h3><p>파일 읽기, 설정, 터미널 실행</p></article>
+        </div>
+        <div class="architecture__services">
+          <div><b>session-service.js</b><span>JSONL 스캔 · 요약 · 상세 캐시</span></div>
+          <div><b>terminal-service.js</b><span>CLI 탐지 · UUID 검증 · OS 실행</span></div>
+          <div><b>main.js</b><span>IPC 라우팅 · 창 보안 · 폴더 선택</span></div>
+        </div>
+        <footer class="slide__footer"><span>보안 기본값</span><span>contextIsolation=true · nodeIntegration=false · sandbox=true</span></footer>
+      </section>
+
+      <section id="slide-9" class="slide slide--code" data-slide>
+        <div class="slide__eyebrow">08 · SCRIPT DEEP DIVE</div>
+        <h2 class="slide__title">JSONL은 통째로 읽지 않고 한 줄씩 처리</h2>
+        <div class="code-layout">
+          <pre class="code-block"><code><span class="code-keyword">async function</span> readLines(filePath, onRecord) {
+  <span class="code-keyword">const</span> input = fs.createReadStream(filePath, {
+    encoding: <span class="code-string">'utf8'</span>
+  });
+  <span class="code-keyword">const</span> lines = readline.createInterface({
+    input,
+    crlfDelay: Infinity
+  });
+
+  <span class="code-keyword">for await</span> (<span class="code-keyword">const</span> line <span class="code-keyword">of</span> lines) {
+    <span class="code-keyword">if</span> (!line.trim()) <span class="code-keyword">continue</span>;
+    <span class="code-keyword">try</span> {
+      <span class="code-keyword">await</span> onRecord(JSON.parse(line));
+    } <span class="code-keyword">catch</span> (error) {
+      <span class="code-comment">// 깨진 JSON 한 줄만 건너뛴다.</span>
+      <span class="code-keyword">if</span> (error <span class="code-keyword">instanceof</span> SyntaxError) <span class="code-keyword">continue</span>;
+      <span class="code-keyword">throw</span> error;
+    }
+  }
+}</code></pre>
+          <div class="code-notes">
+            <article><b>01</b><h3>스트리밍</h3><p>세션 파일이 커져도 메모리에 전체 파일을 올리지 않습니다.</p></article>
+            <article><b>02</b><h3>복원력</h3><p>일부 줄이 손상되어도 나머지 대화는 계속 분석합니다.</p></article>
+            <article><b>03</b><h3>메시지 선별</h3><p><code>event_msg</code>의 user/assistant 메시지만 미리보기에 노출합니다.</p></article>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>src/session-service.js</span><span>검색 인덱스 12,000자 · 상세 500개 메시지 · LRU 20세션</span></footer>
+      </section>
+
+      <section id="slide-10" class="slide slide--code" data-slide>
+        <div class="slide__eyebrow">09 · SCRIPT DEEP DIVE</div>
+        <h2 class="slide__title">많은 세션은 80개씩, 선택은 키보드로</h2>
+        <div class="code-layout code-layout--balanced">
+          <pre class="code-block"><code><span class="code-keyword">const</span> PAGE_SIZE = <span class="code-number">80</span>;
+
+<span class="code-keyword">function</span> moveSelection(direction) {
+  <span class="code-keyword">const</span> sessions = filteredSessions();
+  <span class="code-keyword">let</span> index = sessions.findIndex(
+    (item) =&gt; item.id === state.selectedId
+  );
+
+  index = Math.max(<span class="code-number">0</span>, Math.min(
+    sessions.length - <span class="code-number">1</span>,
+    index + direction
+  ));
+
+  <span class="code-comment">// 선택 위치가 표시 범위를 넘으면</span>
+  <span class="code-comment">// 다음 80개 묶음까지 렌더링한다.</span>
+  <span class="code-keyword">if</span> (index &gt;= state.visibleLimit) {
+    state.visibleLimit = Math.ceil(
+      (index + <span class="code-number">1</span>) / PAGE_SIZE
+    ) * PAGE_SIZE;
+  }
+  selectSession(sessions[index].id, <span class="code-keyword">true</span>);
+}</code></pre>
+          <div class="code-notes">
+            <article><b>↑ ↓</b><h3>한 칸 이동</h3><p>선택 카드가 화면 안에 보이도록 자동 스크롤합니다.</p></article>
+            <article><b>Pg</b><h3>페이지 이동</h3><p>Page Up/Down은 현재 뷰포트 높이에 맞춰 건너뜁니다.</p></article>
+            <article><b>End</b><h3>마지막 이동</h3><p>필요한 카드까지 표시 범위를 즉시 확장합니다.</p></article>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>src/renderer.js</span><span>240개 합성 세션 대규모 목록 검증 이력</span></footer>
+      </section>
+
+      <section id="slide-11" class="slide slide--code" data-slide>
+        <div class="slide__eyebrow">10 · SCRIPT DEEP DIVE</div>
+        <h2 class="slide__title">세션 ID와 경로를 검증한 뒤 OS별 터미널 실행</h2>
+        <div class="dual-code">
+          <article>
+            <h3>입력 검증</h3>
+            <pre class="code-block code-block--small"><code><span class="code-keyword">function</span> validatedSessionId(value) {
+  <span class="code-keyword">const</span> id = String(value || <span class="code-string">''</span>).trim();
+  <span class="code-keyword">if</span> (!FULL_UUID_PATTERN.test(id)) {
+    <span class="code-keyword">throw new</span> Error(
+      <span class="code-string">'유효하지 않은 세션 ID입니다.'</span>
+    );
+  }
+  <span class="code-keyword">return</span> id;
+}</code></pre>
+            <p>명령 문자열에 임의 문자가 들어가기 전에 전체 UUID 형식을 강제합니다.</p>
+          </article>
+          <article>
+            <h3>운영체제 분기</h3>
+            <pre class="code-block code-block--small"><code><span class="code-keyword">if</span> (process.platform === <span class="code-string">'darwin'</span>) {
+  <span class="code-comment">// Apple Terminal에서 새 셸 실행</span>
+  launchDetached(<span class="code-string">'osascript'</span>, args);
+} <span class="code-keyword">else if</span> (process.platform === <span class="code-string">'win32'</span>) {
+  <span class="code-comment">// Windows 새 명령창 실행</span>
+  launchDetached(<span class="code-string">'cmd.exe'</span>, args);
+} <span class="code-keyword">else</span> {
+  <span class="code-comment">// Linux 터미널 후보 탐색</span>
+  launchDetached(terminal[<span class="code-number">0</span>], terminal[<span class="code-number">1</span>]);
+}</code></pre>
+            <p>앱 UI는 같지만 터미널을 여는 방식은 각 운영체제에 맞게 분리됩니다.</p>
+          </article>
+        </div>
+        <footer class="slide__footer"><span>src/terminal-service.js</span><span>CODEX_PATH 지정 또는 일반 설치 경로 자동 탐색</span></footer>
+      </section>
+
+      <section id="slide-12" class="slide" data-slide>
+        <div class="slide__eyebrow">11 · SETTINGS</div>
+        <h2 class="slide__title">기본 경로가 아니라면 두 가지 설정으로 해결</h2>
+        <div class="settings-grid">
+          <article><span>DATA · POWERSHELL</span><h3>CODEX_HOME</h3><code>$env:CODEX_HOME="$HOME\.codex"</code><p>앱이 <code>CODEX_HOME\sessions</code>를 읽습니다. 또는 UI의 “세션 폴더” 버튼으로 직접 선택합니다.</p></article>
+          <article><span>CLI · POWERSHELL</span><h3>CODEX_PATH</h3><code>$env:CODEX_PATH="$env:APPDATA\npm\codex.cmd"</code><p>GUI 앱의 PATH가 터미널과 다를 때 Codex 실행 파일의 절대 경로를 지정합니다.</p></article>
+        </div>
+        <div class="path-flow"><span>선택한 폴더</span><i>→</i><span><code>sessions/</code> 자동 정규화</span><i>→</i><span>settings.json에 경로만 저장</span><i>→</i><span>“기본 경로”로 복구</span></div>
+        <div class="warning-box"><b>중요</b><p>대화 내용과 인증 정보는 앱 설정 파일에 복사하지 않습니다. 선택한 세션 경로만 저장합니다.</p></div>
+        <footer class="slide__footer"><span>Windows 기본 경로</span><span>%USERPROFILE%\.codex\sessions</span></footer>
+      </section>
+
+      <section id="slide-13" class="slide" data-slide>
+        <div class="slide__eyebrow">12 · BUILD & DEPLOY</div>
+        <h2 class="slide__title">Windows 설치 파일은 Windows에서 최종 빌드</h2>
+        <div class="deploy-grid">
+          <article><span>WINDOWS · PRIMARY</span><code>npm run dist:win</code><p>x64 NSIS 설치 프로그램과 Portable EXE를 생성합니다.</p></article>
+          <article><span>현재 OS</span><code>npm run dist</code><p>실행 중인 운영체제용 기본 설치 파일을 생성합니다.</p></article>
+          <article><span>macOS · SECONDARY</span><code>npm run dist:mac</code><p>Intel/Apple Silicon용 DMG와 ZIP을 생성합니다.</p></article>
+        </div>
+        <div class="deploy-matrix">
+          <div><b>Windows</b><span>Setup.exe · Portable.exe</span><em>Windows에서 빌드/실행 검증</em></div>
+          <div><b>macOS</b><span>.dmg · .zip</span><em>Mac에서 빌드/실행 검증</em></div>
+          <div><b>출력</b><span>release/</span><em>배포 전 서명·공증 권장</em></div>
+        </div>
+        <footer class="slide__footer"><span>electron-builder</span><span>macOS: Apple 서명/공증 · Windows: 코드 서명 인증서</span></footer>
+      </section>
+
+      <section id="slide-14" class="slide" data-slide>
+        <div class="slide__eyebrow">13 · QUALITY & TROUBLESHOOTING</div>
+        <h2 class="slide__title">현재 검증 결과와 현장 체크리스트</h2>
+        <div class="quality-layout">
+          <div class="quality-stats">
+            <article><strong>11/11</strong><span>자동 테스트 통과</span></article>
+            <article><strong>0</strong><span>npm audit 취약점</span></article>
+            <article><strong>x64</strong><span>Windows 앱 본체 패키징</span></article>
+          </div>
+          <div class="troubleshooting">
+            <article><h3>세션이 안 보임</h3><p><code>CODEX_HOME</code>, 폴더 권한, “세션 폴더” 선택을 확인합니다.</p></article>
+            <article><h3>CLI 연결 실패</h3><p><code>codex --version</code> 확인 후 필요하면 <code>CODEX_PATH</code>를 지정합니다.</p></article>
+            <article><h3>macOS 앱 차단</h3><p>개발본은 <code>npm start</code>로 실행하고 배포본은 서명·공증합니다.</p></article>
+            <article><h3>Windows 최종 확인</h3><p>앱 본체는 PE32+ x64 패키징 성공. NSIS 설치·실행은 Windows PC에서 최종 검증합니다.</p></article>
+          </div>
+        </div>
+        <footer class="slide__footer"><span>2026.08.11 재검증</span><span>11개 테스트 · 0 취약점 · release/win-unpacked 생성 확인</span></footer>
+      </section>
+
+      <section id="slide-15" class="slide slide--closing" data-slide>
+        <div class="slide__eyebrow">SUMMARY</div>
+        <h2 class="closing__title">찾고.<br />읽고.<br /><span>이어서 작업한다.</span></h2>
+        <div class="closing__next">
+          <p>Windows에서는 PowerPoint/브라우저, MacBook에서는 Keynote/Safari로 같은 자료를 볼 수 있습니다.</p>
+          <div><span>1</span>Windows에 Node.js와 Codex CLI 준비</div>
+          <div><span>2</span>PowerShell에서 <code>npm start</code></div>
+          <div><span>3</span>Windows에서 <code>npm run dist:win</code></div>
+        </div>
+        <footer class="slide__footer"><span>Codex Session Manager 1.1.0</span><span>Q & A</span></footer>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
